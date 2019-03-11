@@ -2,9 +2,15 @@
 [![Python](https://img.shields.io/badge/Python-3.6%2B-brightgreen.svg)](https://www.python.org/downloads/)
 
 
-## 用途
+## 说明
+
+### 功能说明
+
 爬取卖房网站房源信息数据（链家）
 
+###License
+
+请勿用于商业用途！ 欢迎Fork，欢迎Watch，欢迎Star
 
 ## 准备工作：
 
