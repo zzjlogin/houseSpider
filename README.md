@@ -1,6 +1,7 @@
 # houseSpider
 [![Python](https://img.shields.io/badge/Python-3.6%2B-brightgreen.svg)](https://www.python.org/downloads/)
 
+``请勿用于商业用途！``
 
 ## 说明
 
