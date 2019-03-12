@@ -3,6 +3,10 @@
 
 import os
 import time
+import items
+import pandas as pd
+
+
 
 def write_csv(data, city, web=u'lianjia', neworold=u'ershou'):
     sep = os.path.sep
@@ -23,4 +27,6 @@ def write_csv(data, city, web=u'lianjia', neworold=u'ershou'):
     # info_detail = pd.DataFrame(columns=order)
     print(u'写入成功: '+filename)
     return True
+
+
 

@@ -3,16 +3,16 @@
 
 import time
 import datetime
-import opreater
+import engine
 from threading import Thread
+
 
 def main():
 
-    user_in_nub = 1
     cityfile = 'citys.txt'
-    for p,c in opreater.get_citypair(cityfile):
-        t2 = Thread(target=opreater.fech_lianjiainfo, args=(c, p, user_in_nub))
-        t1 = Thread(target=opreater.fech_newlianjiainfo, args=(c, p, user_in_nub))
+    for brief,spell in engine.get_citypair(cityfile):
+        t2 = Thread(target=engine.fech_lianjiainfo, args=(spell, brief,))
+        t1 = Thread(target=engine.fech_lianjiainfo_new, args=(spell, brief,))
         t1.start()
         t2.start()
         while t1.is_alive() or t2.is_alive():
