@@ -11,12 +11,14 @@ def main():
 
     cityfile = 'citys.txt'
     for brief,spell in engine.get_citypair(cityfile):
-        t2 = Thread(target=engine.fech_lianjiainfo, args=(spell, brief,))
+        t2 = Thread(target=engine.fech_lianjiainfo_old, args=(spell, brief,))
         t1 = Thread(target=engine.fech_lianjiainfo_new, args=(spell, brief,))
         t1.start()
         t2.start()
         while t1.is_alive() or t2.is_alive():
+        #while t2.is_alive():
             if (not t1.is_alive()) and (not t2.is_alive()):
+            #if (not t2.is_alive()):
                 return True
 
 if __name__ == '__main__':

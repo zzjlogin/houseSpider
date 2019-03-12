@@ -19,8 +19,10 @@ proxy_url='http://www.xicidaili.com/nn/'
 
 domains = [
     'lianjia.com/ershoufang',
-    'lianjia.com/loufang'
+    'lianjia.com/loupan'
 ]
+
+count = 1000
 
 proxies_pagetxt = downloader.downloader(url=proxy_url)
 proxy_ip_list = items.get_proxy_iplist(proxies_pagetxt)
@@ -47,7 +49,7 @@ def generate_url(city, root='lianjia.com', subdirpre='ershoufang',):
     return url.format(city=city,root=root,subdirpre=subdirpre,)
 
 
-pagetxt_queue = queue.Queue(100)
+
 
 def fech_mainpages(urls, myqueue, tag=False, urlsque=None):
     for url in urls:
@@ -60,91 +62,125 @@ def fech_mainpages(urls, myqueue, tag=False, urlsque=None):
             if myqueue.full():
                 time.sleep(2)
             myqueue.put(downloader.downloader(url))
-    return True
+    return myqueue
 
-def fech_lianjiainfo(spell, brief):
-    info_detail = 0
+def to_infopd(mydic, infos):
+    
+    if infos is 0:
+        infos = pd.DataFrame([mydic])
+    else:
+        print(infos.shape[0],infos.shape[1])
+        infos.append(pd.DataFrame([mydic]))
+    return infos
+
+def fech_lianjiainfo_old(spell, brief):
+    
     web = u'lianjia'
-    for d in domains:
-        print(d)
-        d = d.split('/')
-        print(d)
-        root_url = generate_url(city=brief, root=d[0], subdirpre=d[1])
-        home_txt = downloader.downloader(url=root_url, proxies=get_random_proxies())
-        
-        urls_old = lianjia_spider.get_mainurls_old(home_txt)
-        if not urls_old:
-            print('爬取失败')
-            return False
-        mainpages_que = queue.Queue(100)
-        mainpages_que.put(home_txt)
-        t_mainpage = Thread(target=fech_mainpages, args=(urls_old, mainpages_que,))
-        t_mainpage.start()
-        info = pd.DataFrame()
-        while t_mainpage.is_alive() or not mainpages_que.empty():
-            while t_mainpage.is_alive() and mainpages_que.empty():
-                time.sleep(1)
-            main_txt = pagetxt_queue.get()
+    old = domains[0]
+    old = old.split('/')
+    root_url = generate_url(city=brief, root=old[0], subdirpre=old[1])
+    home_txt = downloader.downloader(url=root_url, proxies=get_random_proxies())
+    
+    urls_old = lianjia_spider.get_mainurls_old(home_txt)
+    if not urls_old:
+        print('爬取失败')
+        return False
+    mainpages_que = queue.Queue(10)
+    mainpages_que.put(home_txt)
+    t_mainpage = Thread(target=fech_mainpages, args=(urls_old, mainpages_que,))
+    t_mainpage.start()
+    print('爬主页，下载主页到队列')
+    #info = pd.DataFrame()
+    infos = 0
+    while t_mainpage.is_alive() or not mainpages_que.empty():
+        if not t_mainpage.is_alive() and mainpages_que.empty():
+            break
+        if mainpages_que.empty():
+            time.sleep(2)
+        while not mainpages_que.empty():
+            main_txt = mainpages_que.get()
             housepages_que = queue.Queue(100)
             houseurls_que = queue.Queue(100)
             houseurls = lianjia_spider.get_houseurls_old(main_txt)
             t_housepage = Thread(target=fech_mainpages, args=(houseurls, housepages_que, True, houseurls_que))
             t_housepage.start()
-            
+            print('楼房信息主页：下载中')
             while t_housepage.is_alive() or not housepages_que.empty():
-                while t_housepage.is_alive() and housepages_que.empty():
+                if not t_housepage.is_alive() and housepages_que.empty():
+                    break
+                if housepages_que.empty():
                     time.sleep(1)
-                housepage_txt = housepages_que.get()
-                houseurl = houseurls_que.get()
-                detail = items.get_info(page_txt=housepage_txt, url=houseurl)
-                if detail == False:
-                    pass
-                info = pd.DataFrame([detail])
-            if info.shape[0] >= 10000:
-                piplines.write_csv(data=info, city=spell, web=web, neworold='old')
-        return piplines.write_csv(data=info, city=spell, web=web, neworold='old')
+                if not housepages_que.empty():
+                    housepage_txt = housepages_que.get()
+                    houseurl = houseurls_que.get()
+                    detail = items.get_info_oldhouse(page_txt=housepage_txt, url=houseurl)
+                    if detail == False:
+                        print('二手房：detail获取失败')
+                    else:
+                        if infos is 0:
+                            infos = pd.DataFrame([detail])
+                        else:
+                            info = pd.DataFrame([detail])
+                            infos = infos.append(info,ignore_index=True)
+                    if infos.shape[0] >= count:
+                        piplines.write_csv(data=infos, city=spell, web=web, neworold='old')
+                        infos = 0
+    return piplines.write_csv(data=infos, city=spell, web=web, neworold='old')
 
 
 def fech_lianjiainfo_new(spell, brief):
-    info_detail = 0
+    
     web = u'lianjia'
-    for d in domains:
-        d = d.split('/')
-        print(d[0] + 'd1:'+d[1])
-        root_url = generate_url(city=brief, root=d[0], subdirpre=d[1])
-        home_txt = downloader.downloader(url=root_url, proxies=get_random_proxies())
-        
-        urls_new = lianjia_spider.get_mainurls_new(home_txt)
-        if not urls_new:
-            print('爬取失败')
-            return False
-        mainpages_que = queue.Queue(100)
-        mainpages_que.put(home_txt)
-        t_mainpage = Thread(target=fech_mainpages, args=(urls_new, mainpages_que,))
-        t_mainpage.start()
-        info = pd.DataFrame()
-        while t_mainpage.is_alive() or not mainpages_que.empty():
-            while t_mainpage.is_alive() and mainpages_que.empty():
-                time.sleep(1)
-            main_txt = pagetxt_queue.get()
-            housepages_que = queue.Queue(100)
-            houseurls_que = queue.Queue(100)
+    d = domains[1]
+    d = d.split('/')
+    root_url = generate_url(city=brief, root=d[0], subdirpre=d[1])
+    home_txt = downloader.downloader(url=root_url, proxies=get_random_proxies())
+    urls_new = lianjia_spider.get_mainurls_new(home_txt)
+    if not urls_new:
+        print('爬取失败')
+        return False
+    infos = 0
+    mainpages_que = queue.Queue(100)
+    mainpages_que.put(home_txt)
+    t_mainpage = Thread(target=fech_mainpages, args=(urls_new, mainpages_que,))
+    t_mainpage.start()
+    info = pd.DataFrame()
+    while t_mainpage.is_alive() or not mainpages_que.empty():
+        if not t_mainpage.is_alive() and mainpages_que.empty():
+            break
+        if mainpages_que.empty():
+            time.sleep(2)
+        while not mainpages_que.empty():
+            
+            main_txt = mainpages_que.get()
+            housepages_que = queue.Queue(300)
+            houseurls_que = queue.Queue(300)
             houseurls = lianjia_spider.get_houseurls_new(main_txt)
             t_housepage = Thread(target=fech_mainpages, args=(houseurls, housepages_que, True, houseurls_que))
             t_housepage.start()
             
             while t_housepage.is_alive() or not housepages_que.empty():
-                while t_housepage.is_alive() and housepages_que.empty():
-                    time.sleep(1)
-                housepage_txt = housepages_que.get()
-                houseurl = houseurls_que.get()
-                detail = items.get_info(page_txt=housepage_txt, url=houseurl)
-                if detail == False:
-                    pass
-                info = pd.DataFrame([detail])
-            if info.shape[0]>=10000:
-                piplines.write_csv(data=info, city=spell, web=web, neworold='new')
-        return piplines.write_csv(data=info, city=spell, web=web, neworold='new')
+                if not t_housepage.is_alive() and housepages_que.empty():
+                    break
+                if not housepages_que.empty():
+                    housepage_txt = housepages_que.get()
+                    houseurl = houseurls_que.get()
+                    detail = items.get_info_newhouse(page_txt=housepage_txt, url=houseurl)
+                    if detail == False:
+                        print('新房获取item失败')
+                    else:
+                        if infos is 0:
+                            infos = pd.DataFrame([detail])
+                        else:
+                            info = pd.DataFrame([detail])
+                            infos = infos.append(info,ignore_index=True)
+                    # print('======================')
+                    # print('下面是infos：\n')
+                    # print(infos)
+                    if infos.shape[0]>=count:
+                        piplines.write_csv(data=infos, city=spell, web=web, neworold='new')
+                        infos = 0
+    return piplines.write_csv(data=infos, city=spell, web=web, neworold='new')
 
 
 

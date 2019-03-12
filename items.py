@@ -22,7 +22,7 @@ def get_proxy_iplist(pagedetail_txt):
     return ip_list
 
 
-def get_info(page_txt, url):
+def get_info_oldhouse(page_txt, url):
 
     info = {}
     try:
@@ -41,11 +41,11 @@ def get_info(page_txt, url):
         info['recordtime'] = datetime.datetime.now().isoformat()
         return info
     except:
-        print('获取信息失败')
+        print('二手房：获取信息失败')
         return False
 
 
-def get_newhouse_info(page_txt, url):
+def get_info_newhouse(page_txt, url):
     
     info = {}
     try:
@@ -64,7 +64,7 @@ def get_newhouse_info(page_txt, url):
         info['recordtime'] = datetime.datetime.now().isoformat().strip().lstrip()
         return info
     except:
-        print('获取信息失败')
+        print('新房：获取信息失败（items文件）')
         return False
 
 
