@@ -41,7 +41,7 @@ def get_info_oldhouse(page_txt, url):
         info['recordtime'] = datetime.datetime.now().isoformat()
         return info
     except:
-        print('二手房：获取信息失败')
+        print('二手房：获取信息失败，url：'+url)
         return False
 
 
@@ -64,8 +64,28 @@ def get_info_newhouse(page_txt, url):
         info['recordtime'] = datetime.datetime.now().isoformat().strip().lstrip()
         return info
     except:
-        print('新房：获取信息失败（items文件）')
+        print('新房：获取信息失败，url：'+url)
         return False
 
 
-
+def get_info_58old(page_txt, url):
+    print('获取二手房item信息：' + url)
+    info = {}
+    try:
+        soup = BeautifulSoup(page_txt, 'lxml')
+        info['title'] = soup.select('.house-title')[0].next.next.text
+        info['totalprice'] = soup.select('.house-title')[0].text
+        info['persquaremeterprice'] = soup.select('.unitPriceValue')[0].next
+        info['totalarea'] = soup.select('.area')[0].next.next.strip(u'平米')
+        # info['villagename_lianjia'] = soup.select('.label')[0].next.next.text
+        info['villagename'] = soup.select('.info')[0].text
+        info['district'] = soup.select('.info')[1].next.text
+        info['housetype'] = soup.select('.base')[0].select('.label')[0].next.next
+        info['floor'] = soup.select('.room')[0].next.next.next.text
+        info['onselltime'] = soup.select('.transaction')[0].select('.label')[0].next.next.next.text
+        info['url'] = url
+        info['recordtime'] = datetime.datetime.now().isoformat()
+        return info
+    except:
+        print('二手房：获取信息失败，url：'+url)
+        return False

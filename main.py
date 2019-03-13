@@ -5,10 +5,11 @@ import time
 import datetime
 import engine
 from threading import Thread
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def fech_allcity_info(fun, cityspell, brief):
     pass
-
 
 def main():
 

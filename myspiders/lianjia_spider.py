@@ -3,6 +3,8 @@
 
 from bs4 import BeautifulSoup
 from parsel import Selector
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def get_houseurls_old(mainpage_txt):
     # print('执行：get_houseurls_old')

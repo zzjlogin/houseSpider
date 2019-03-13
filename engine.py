@@ -11,6 +11,8 @@ import pandas as pd
 from threading import Thread
 import queue
 import time
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 proxy_url = 'http://www.xicidaili.com/nn/'
 try:
