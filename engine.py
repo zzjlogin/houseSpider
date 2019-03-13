@@ -4,8 +4,8 @@
 from xpinyin import Pinyin
 import downloader
 import random
-from myspiders import lianjia_spider
-import items
+from myspiders import spider_lianjia
+from items import items_lianjia
 import piplines
 import pandas as pd
 from threading import Thread
@@ -14,11 +14,13 @@ import time
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+
+
 proxy_url = 'http://www.xicidaili.com/nn/'
 try:
     
     proxies_pagetxt = downloader.downloader(url=proxy_url)
-    proxy_ip_list = items.get_proxy_iplist(proxies_pagetxt)
+    proxy_ip_list = items_lianjia.get_proxy_iplist(proxies_pagetxt)
 except:
     proxy_ip_list = []
 del proxies_pagetxt
@@ -148,7 +150,7 @@ def fech_lianjiainfo_old(spell, brief):
     root_url = generate_url(city=brief, root=old[0], subdirpre=old[1])
     home_txt = downloader.downloader(url=root_url, proxies=get_random_proxies())
     
-    mainurls_old = lianjia_spider.get_mainurls_old(home_txt)
+    mainurls_old = spider_lianjia.get_mainurls_old(home_txt)
 
     if not mainurls_old:
         print('爬取首页失败')
@@ -163,7 +165,7 @@ def fech_lianjiainfo_old(spell, brief):
     houseurls_que1 = queue.Queue(300)
     t_houseurls = Thread(target=que_map_fuc, args=(mainpages_que,
                                                    houseurls_que1,
-                                                   lianjia_spider.get_houseurls_old,
+                                                   spider_lianjia.get_houseurls_old,
                                                    t_mainpage,
                                                    1))
     t_houseurls.start()
@@ -193,7 +195,7 @@ def fech_lianjiainfo_old(spell, brief):
             housepage_txt = housepages_que.get()
             houseurl = houseurls_que2.get()
             print('分析二手房主页url的page页面：'+houseurl)
-            detail = items.get_info_oldhouse(page_txt=housepage_txt, url=houseurl)
+            detail = items_lianjia.get_info_oldhouse(page_txt=housepage_txt, url=houseurl)
             if detail == False:
                 print('二手房：detail获取失败')
             else:
@@ -221,7 +223,7 @@ def fech_lianjiainfo_new(spell, brief):
     # print('新房主页url：'+root_url)
     home_txt = downloader.downloader(url=root_url, proxies=get_random_proxies())
     
-    mainurls_new = lianjia_spider.get_mainurls_new(home_txt)
+    mainurls_new = spider_lianjia.get_mainurls_new(home_txt)
     
     if not mainurls_new:
         print('爬取首页失败')
@@ -237,7 +239,7 @@ def fech_lianjiainfo_new(spell, brief):
     houseurls_que1 = queue.Queue(300)
     t_houseurls = Thread(target=que_map_fuc, args=(mainpages_que,
                                                    houseurls_que1,
-                                                   lianjia_spider.get_houseurls_new,
+                                                   spider_lianjia.get_houseurls_new,
                                                    t_mainpage,
                                                    1))
     t_houseurls.start()
@@ -267,7 +269,7 @@ def fech_lianjiainfo_new(spell, brief):
             housepage_txt = housepages_que.get()
             houseurl = houseurls_que2.get()
             # print('分析新房主页url的page页面：' + houseurl)
-            detail = items.get_info_newhouse(page_txt=housepage_txt, url=houseurl)
+            detail = items_lianjia.get_info_newhouse(page_txt=housepage_txt, url=houseurl)
             if detail == False:
                 print('新房：detail获取失败')
             else:

@@ -3,9 +3,6 @@
 
 import os
 import time
-import items
-import pandas as pd
-
 
 
 def write_csv(data, city, web=u'lianjia', neworold=u'ershou' ,mode='a' ,encoding='utf_8_sig'):
@@ -27,6 +24,3 @@ def write_csv(data, city, web=u'lianjia', neworold=u'ershou' ,mode='a' ,encoding
     # info_detail = pd.DataFrame(columns=order)
     print(u'写入成功: '+filename)
     return True
-
-
-
