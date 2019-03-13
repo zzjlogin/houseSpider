@@ -23,7 +23,7 @@ def get_proxy_iplist(pagedetail_txt):
 
 
 def get_info_oldhouse(page_txt, url):
-
+    print('获取二手房item信息：' + url)
     info = {}
     try:
         soup = BeautifulSoup(page_txt, 'lxml')
@@ -46,7 +46,7 @@ def get_info_oldhouse(page_txt, url):
 
 
 def get_info_newhouse(page_txt, url):
-    
+    print('获取新房item信息：'+url)
     info = {}
     try:
         soup = BeautifulSoup(page_txt, 'lxml')
