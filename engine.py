@@ -4,6 +4,7 @@
 from xpinyin import Pinyin
 import downloader
 import random
+from myspiders import spider_anjuke
 from myspiders import spider_lianjia
 from items import items_lianjia
 import piplines
@@ -289,6 +290,14 @@ def fech_lianjiainfo_new(spell, brief):
 
 
 
+def fech_anjuke_old(url):
 
+    mainpage_txt = downloader.downloader(url,)
+    
+    pre_mainurls_list = []
+    end_mainurls_list = []
+    now_main_url = spider_anjuke.get_mainurls_old(mainpage_txt)
+    
+    
 
 

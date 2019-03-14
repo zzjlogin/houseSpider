@@ -9,9 +9,10 @@ import datetime
 def get_items_old(page_txt, url):
     print('获取二手房item信息：' + url)
     info = {}
+    soup = BeautifulSoup(page_txt, 'lxml')
     try:
-        soup = BeautifulSoup(page_txt, 'lxml').strip()
-        info['title'] = soup.select('.long-title')[0].strip()
+        
+        info['title'] = soup.select('.long-title')[0].text.strip()
         #soup.select('.clearfix')[0].text.strip()
     except:
         info['title'] = ''
@@ -57,7 +58,7 @@ def get_items_old(page_txt, url):
             info['url'] = url
             info['recordtime'] = datetime.datetime.now().isoformat()
             return info
-        else:
-            print('新房：获取信息失败，url：' + url)
-            return False
+
+    print('新房：获取信息失败，url：' + url)
+    return False
 
