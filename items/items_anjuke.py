@@ -9,7 +9,10 @@ import datetime
 def get_items_old(page_txt, url):
     print('获取二手房item信息：' + url)
     info = {}
-    soup = BeautifulSoup(page_txt, 'lxml')
+    try:
+        soup = BeautifulSoup(page_txt, 'lxml')
+    except:
+        return False
     try:
         
         info['title'] = soup.select('.long-title')[0].text.strip()
