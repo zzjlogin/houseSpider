@@ -204,7 +204,7 @@ def fech_lianjiainfo_old(spell, brief):
                     infos = pd.DataFrame([detail])
                 else:
                     info = pd.DataFrame([detail])
-                    infos = infos.append(info,ignore_index=True)
+                    infos = infos.append(info,ignore_index=True,)
             if infos.shape[0] >= count:
                 piplines.write_csv(data=infos, city=spell, web=web, neworold='old')
                 infos = pd.DataFrame()
