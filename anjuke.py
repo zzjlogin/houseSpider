@@ -11,12 +11,13 @@ import random
 
 proxy_url = 'http://www.xicidaili.com/nn/'
 try:
-    
+    #this is test
     proxies_pagetxt = downloader.downloader(url=proxy_url)
     proxy_ip_list = items_lianjia.get_proxy_iplist(proxies_pagetxt)
 except:
     proxy_ip_list = []
 del proxies_pagetxt
+
 
 
 def get_random_proxies(ip_list=proxy_ip_list):
