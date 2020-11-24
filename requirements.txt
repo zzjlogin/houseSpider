@@ -1,5 +1,0 @@
-requests
-parsel
-pandas
-beautifulsoup4
-xpinyin
